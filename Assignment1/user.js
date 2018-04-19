@@ -1,6 +1,6 @@
 let users     = [];
 let loggedOnUsers = [];
-let idCurrent = 0;
+let idCurrent = 1;
 let sessionCurrent = 10;
 let tokenCurrent = 0;
 
@@ -28,13 +28,17 @@ function Create(req, res, next) {
             avatar   : inAvatar,
             id       : idCurrent
         };
-        idCurrent++;
+        console.log("created : " + user.username );
+        console.log("with id : " + user.id );
+
+
 
         let response = {
             id : user.id,
             username : user.username
         };
         users.push(user);
+        idCurrent++;
 
         return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
     }
