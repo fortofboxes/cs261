@@ -1,7 +1,7 @@
 let users     = [];
 let loggedOnUsers = [];
 let idCurrent = 0;
-let sessionCurrent = 0;
+let sessionCurrent = 10;
 let tokenCurrent = 0;
 
 function Create(req, res, next) {
@@ -18,7 +18,9 @@ function Create(req, res, next) {
         }
     }
     if (isDuplicate)    {
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', username : 'Already taken' })));
+        reason = { inUsername : 'Already taken'}
+
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason}})));
     } else {
         var user = {
             username : inUsername,
