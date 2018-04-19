@@ -34,7 +34,7 @@ function Create(req, res, next) {
         };
         users.push(user);
 
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  })));
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
     }
     
 }
@@ -66,7 +66,7 @@ function Login(req, res, next) {
                     token : tokenCurrent
                 };
 
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response})));       
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));       
             } else {
                 break;
             }
@@ -92,7 +92,7 @@ function Get(req, res, next) {
                     username : loggedOnUsers[i].username,
                     avatar : loggedOnUsers[i].avatar
                 };
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  })));       
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));       
             } else {
                 break;
             }
@@ -116,7 +116,7 @@ function Find(req, res, next){
                     id : loggedOnUsers[i].id,
                     username : loggedOnUsers[i].username
                 };
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  })));       
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));       
             } else {
                 break;
             }
