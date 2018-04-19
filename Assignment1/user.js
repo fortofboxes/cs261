@@ -44,7 +44,7 @@ function Login(req, res, next) {
     let inPassword = req.body.password || req.query.password;
     console.log("loginUser");
     
-    let isDuplicate = false;
+    let userCount = users.length;
     for (let i = 0; i < userCount; i++) {
         if (users[i].username == inUsername){
             if (users[i].password == inPassword){
