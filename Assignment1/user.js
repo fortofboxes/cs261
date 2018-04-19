@@ -123,7 +123,7 @@ function Find(req, res, next){
         }
     }
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : 'Invalid Information'  })));       
-}
+
 console.log("findUser");
 }
 
