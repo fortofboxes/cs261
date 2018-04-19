@@ -101,12 +101,12 @@ function Get(req, res, next) {
         }
     }
 
-    let response = {
+    let data = {
         id : null,
         username : null,
         avatar : null
     };  
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : response  })));       
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));       
 }
 
 function Find(req, res, next){
