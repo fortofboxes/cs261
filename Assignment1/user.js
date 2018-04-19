@@ -91,7 +91,7 @@ function Get(req, res, next) {
     
     let loggedOnCount = loggedOnUsers.length;
     for (let i = 0; i < loggedOnCount; i++) {
-         console.log("logged on: : " + loggedOnUsers[i]);
+         console.log("logged on: : " + loggedOnUsers[i].id);
 
         if (inId == loggedOnUsers[i].id){
             if(inSession == loggedOnUsers[i].session &&
