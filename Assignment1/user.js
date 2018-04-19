@@ -42,13 +42,9 @@ function Create(req, res, next) {
 function Login(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
-    console.log("IN: " + inUsername);
-    console.log("IN: " + inPassword);
-    
+
     let userCount = users.length;
     for (let i = 0; i < userCount; i++) {
-        console.log(i +":" + users[i].username);
-        console.log(i +":" + users[i].password);
 
         if (users[i].username == inUsername){
             if (users[i].password == inPassword){
@@ -56,13 +52,21 @@ function Login(req, res, next) {
                 let loginInfo = {
                     id : users[i].id,
                     session : sessionCurrent,
-                    token : tokenCurrent
+                    token : tokenCurrent,
+                    avatar : users[i].avatar,
+                    username : users[i].username
                 }; 
                 sessionCurrent++; tokenCurrent++;
 
                 loggedOnUsers.push(loginInfo);
 
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', loginInfo : loginInfo  })));       
+                let response = {
+                    id : users[i].id,
+                    session : sessionCurrent,
+                    token : tokenCurrent
+                };
+
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response})));       
             } else {
                 break;
             }
@@ -73,19 +77,54 @@ function Login(req, res, next) {
 }
 
 function Get(req, res, next) {
-    let id = req.body.id || req.query.id || req.params.id
-;    let session = req.body._session || req.query._session;
-    let token = req.body._token || req.query._token;
-console.log("getUser");
+    let inId      = req.body.id       || req.query.id || req.params.id;    
+    let inSession = req.body._session || req.query._session;
+    let inToken   = req.body._token   || req.query._token;
+    
+    let loggedOnCount = loggedOnUsers.length;
+    for (let i = 0; i < loggedOnCount; i++) {
+        if (inId == loggedOnUsers[i].id){
+            if(inSession == loggedOnUsers[i].sessionCurrent &&
+               inToken   == loggedOnUsers[i].token){
+                
+                let response = {
+                    id : loggedOnUsers[i].id,
+                    username : loggedOnUsers[i].username,
+                    avatar : loggedOnUsers[i].avatar
+                };
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  })));       
+            } else {
+                break;
+            }
+        }
+    }
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : 'Invalid Information'  })));       
 }
 
 function Find(req, res, next){
-    let username = req.body.username   || req.query.username || req.params.username;
-    let session  = req.body._session   || req.query._session || req.params._session;
-    let token    = req.body._token     || req.query._token || req.params._token;
-
+    let inUsername = req.body.username || req.query.username || req.params.username;    
+    let inSession  = req.body._session || req.query._session;
+    let inToken    = req.body._token   || req.query._token;
+    
+    let loggedOnCount = loggedOnUsers.length;
+    for (let i = 0; i < loggedOnCount; i++) {
+        if (inUsername == loggedOnUsers[i].username){
+            if(inSession == loggedOnUsers[i].sessionCurrent &&
+               inToken   == loggedOnUsers[i].token){
+                
+                let response = {
+                    id : loggedOnUsers[i].id,
+                    username : loggedOnUsers[i].username
+                };
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  })));       
+            } else {
+                break;
+            }
+        }
+    }
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : 'Invalid Information'  })));       
+}
 console.log("findUser");
-
 }
 
 function Update(req, res, next){
