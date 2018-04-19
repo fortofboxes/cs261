@@ -20,19 +20,20 @@ function Create(req, res, next) {
     if (isDuplicate)    {
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', username : 'Already taken' })));
     } else {
-        let user = {
+        var user = {
             username : inUsername,
             password : inPassword,
             avatar   : inAvatar,
-            id       : idCurrent,
+            id       : idCurrent
         };
         idCurrent++;
-        users.push(user);
 
         let response = {
             id : user.id,
             username : user.username
         };
+        users.push(user);
+
         return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  })));
     }
     
