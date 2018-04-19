@@ -86,7 +86,7 @@ function Get(req, res, next) {
     let loggedOnCount = loggedOnUsers.length;
     for (let i = 0; i < loggedOnCount; i++) {
         if (inId == loggedOnUsers[i].id){
-            if(inSession == loggedOnUsers[i].sessionCurrent &&
+            if(inSession == loggedOnUsers[i].session &&
                inToken   == loggedOnUsers[i].token){
                 
                 let response = {
@@ -111,7 +111,7 @@ function Find(req, res, next){
     let loggedOnCount = loggedOnUsers.length;
     for (let i = 0; i < loggedOnCount; i++) {
         if (inUsername == loggedOnUsers[i].username){
-            if(inSession == loggedOnUsers[i].sessionCurrent &&
+            if(inSession == loggedOnUsers[i].session &&
                inToken   == loggedOnUsers[i].token){
                 
                 let response = {
