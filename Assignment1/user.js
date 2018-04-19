@@ -18,7 +18,7 @@ function Create(req, res, next) {
         }
     }
     if (isDuplicate)    {
-        reason = { inUsername : 'Already taken'}
+        reason = { inUsername : 'Already taken'};
 
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason}})));
     } else {
