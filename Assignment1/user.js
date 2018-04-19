@@ -32,7 +32,7 @@ function createUser(req, res, next) {
             id : user.id,
             username : user.username
         };
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  }));
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response : response  })));
         console.log("created User");
     }
     
