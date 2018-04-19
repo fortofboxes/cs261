@@ -84,7 +84,7 @@ function Get(req, res, next) {
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
 
- console.log("inID : " + inID);
+ console.log("inID : " + inId);
  console.log("inses : " + inSession);
  console.log("intoken: " + inToken);
 
