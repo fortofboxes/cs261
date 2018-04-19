@@ -42,10 +42,14 @@ function Create(req, res, next) {
 function Login(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
-    console.log("loginUser");
+    console.log("IN: " + inUsername);
+    console.log("IN: " + inPassword);
     
     let userCount = users.length;
     for (let i = 0; i < userCount; i++) {
+        console.log(i +":" + users[i].username);
+        console.log(i +":" + users[i].password);
+
         if (users[i].username == inUsername){
             if (users[i].password == inPassword){
                 
