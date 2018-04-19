@@ -100,7 +100,13 @@ function Get(req, res, next) {
             }
         }
     }
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : 'Invalid Information'  })));       
+
+    let response = {
+        id : null,
+        username : null,
+        avatar : null
+    };  
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : response  })));       
 }
 
 function Find(req, res, next){
