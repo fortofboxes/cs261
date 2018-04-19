@@ -8,7 +8,6 @@ function Create(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
     let inAvatar   = req.body.avatar   || req.query.avatar;
-    console.log("createUser");
     
     let userCount = users.length;
     let isDuplicate = false;
@@ -123,8 +122,6 @@ function Find(req, res, next){
         }
     }
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : 'Invalid Information'  })));       
-
-console.log("findUser");
 }
 
 function Update(req, res, next){
@@ -136,9 +133,6 @@ function Update(req, res, next){
     let newPassword = req.body.newPassword || req.query.newPassword;
     let session     = req.body._session    || req.query._session || req.params._session;
     let token       = req.body._token      || req.query._token || req.params._token;
-   
-console.log("updateUser");
-
 }
 
 // this function is exported so it can be called from app.js
