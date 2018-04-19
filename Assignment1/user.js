@@ -18,7 +18,7 @@ function Create(req, res, next) {
         }
     }
     if (isDuplicate)    {
-        reason = { inUsername : 'Already taken'}
+        reason = { username : 'Already taken'}
 
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
     } else {
@@ -100,7 +100,7 @@ function Get(req, res, next) {
             }
         }
     }
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : 'Invalid Information'  })));       
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : 'Invalid Information'  })));       
 }
 
 function Find(req, res, next){
@@ -124,7 +124,7 @@ function Find(req, res, next){
             }
         }
     }
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', response : 'Invalid Information'  })));       
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : 'Invalid Information'  })));       
 }
 
 function Update(req, res, next){
