@@ -16,7 +16,7 @@ function createUser(req, res, next) {
     }
     if (isDuplicate)    {
         console.log("Username already taken");
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', username : 'Already taken' }));
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', username : 'Already taken' })));
     }
     else {
         let user = {
