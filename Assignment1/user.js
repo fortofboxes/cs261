@@ -102,7 +102,7 @@ function Get(req, res, next) {
 
     console.log("inID : " + inId);
 
-    if (inId in users)// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
+    if (inId in users){// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
         let response = {
             id : users[inId].id,
             username : users[inId].username,
