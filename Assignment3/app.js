@@ -39,7 +39,7 @@ connection.connect(err => {
     console.log ("connection : " + err);
 });
 
-var redisClient = redis.createClient(6379, 'ip-172-31-17-148.us-west-2.compute.internal'); 
+var redisClient = redis.createClient(6379, 'ip-172-31-29-156.us-west-2.compute.internal'); 
 
 let server = app.listen(8123);
 console.log("listening");
