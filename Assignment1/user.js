@@ -1,8 +1,31 @@
 let users     = [];
 let loggedOnUsers = [];
-let idCurrent = 1;
 let sessionCurrent = 10;
 let tokenCurrent = 0;
+
+function GenerateID() {
+  let unique = false;
+  let newID = 0;
+  do {
+        newID = Math.floor(Math.random() * Math.floor(10000));
+
+        let userCount = users.length;
+        unique = true;
+        for (let i = 0; i < userCount; i++) {
+            if (users[i].id ==  newID){
+                unique = false;
+                break;
+            }
+
+        }
+
+    }while( !unique);
+    return newID;
+}
+
+function GenerateInteger() {
+    return Math.floor(Math.random() * Math.floor(10000));
+}
 
 function Create(req, res, next) {
     let inUsername = req.body.username || req.query.username;
@@ -22,15 +45,16 @@ function Create(req, res, next) {
 
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
     } else {
+
+        let newID = GenerateID();
         let user = {
             username : inUsername,
             password : inPassword,
             avatar   : inAvatar,
-            id       : idCurrent
+            id       : newID
         };
 
         users.push(user);
-        idCurrent++;
         console.log("created : " + user.username );
         console.log("with id : " + user.id );
 
@@ -39,10 +63,8 @@ function Create(req, res, next) {
             username : user.username
         };
 
-
         return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
     }
-    
 }
 
 function Login(req, res, next) {
@@ -55,21 +77,22 @@ function Login(req, res, next) {
         if (users[i].username == inUsername){
             if (users[i].password == inPassword){
                 
+                let newSession = GenerateInteger();
+                let newToken   = GenerateInteger();
+
                 let loginInfo = {
                     id : users[i].id,
-                    session : sessionCurrent,
-                    token : tokenCurrent,
+                    session : newSession,
+                    token : newToken,
                     avatar : users[i].avatar,
                     username : users[i].username
                 }; 
-                sessionCurrent++; tokenCurrent++;
-
                 loggedOnUsers.push(loginInfo);
 
                 let response = {
                     id : users[i].id,
-                    session : sessionCurrent,
-                    token : tokenCurrent
+                    session : newSession,
+                    token : newToken
                 };
 
                 return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));       
