@@ -24,6 +24,7 @@ function Create(req, res, next) {
 
     } else {
         let newID = uuid();
+        //  HOW TO HASH PASSWORD???
         //var newhash = crypto.createHash('sha512')
         //         .update(result[0].salt + password, 'utf8')
         //         .digest('hex');
@@ -32,10 +33,9 @@ function Create(req, res, next) {
         //    username : inUsername,
         //    password : inPassword,
         //    avatar   : inAvatar,
-        //};
+        //}
 
-        //what is salt?
-        var sql = "INSERT INTO user (id, username, password, avatar) VALUES (newID, inUsername, inPassword, inAvatar)"; // Does password hash need to happen?? w
+         let sql = "INSERT INTO user (id, username, password, avatar) VALUES (newID, inUsername, inPassword, inAvatar)"; 
          connection.query(sql, function (err, result) {
            if (err) console.log("ISSUE ON CREATE");
            console.log("1 record inserted");
@@ -58,9 +58,9 @@ function Create(req, res, next) {
 function Login(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
-        
 
-    connection.query('SELECT * FROM `user` WHERE `id` = usernamesToIDs[inUsername]', function (error, results, fields) {
+    let sql = "SELECT * FROM `user` WHERE `id` = usernamesToIDs[inUsername]"
+    connection.query(sql, function (error, results, fields) {
     // error will be an Error if one occurred during the query
     console.log("error" +  errors);
     
