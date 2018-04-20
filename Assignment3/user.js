@@ -35,7 +35,7 @@ function Create(req, res, next) {
         //    avatar   : inAvatar,
         //}
 
-         let sql = "INSERT INTO user (id, username, password, avatar) VALUES (newID, inUsername, inPassword, inAvatar)"; 
+         let sql = 'INSERT INTO user (id, username, passwordhash, avatar_url) VALUES (newID, inUsername, inPassword, inAvatar)'; 
          connection.query(sql, function (err, result, fields) {
            if (err) console.log("ISSUE ON CREATE " + err);
            console.log("1 record inserted");
