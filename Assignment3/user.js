@@ -56,15 +56,16 @@ function Login(req, res, next) {
            let newSession = GenerateInteger();
            let newToken   = GenerateInteger();
 
-           let loginInfo = {
-                    id : users[usernamesToIDs[inUsername]].id,
-                    session : newSession,
-                    token : newToken,
-                    avatar : users[usernamesToIDs[inUsername]].avatar,
-                    username : inUsername
-                }; 
+           redisClient.hmset(newSession, {
+            'id'       : users[usernamesToIDs[inUsername]].id,
+            'username' : inUsername,
+            'token'    : newToken,
+            'avatar'   : users[usernamesToIDs[inUsername]].avatar
+           });
 
-            loggedOnUsers[loginInfo.id] = loginInfo;
+            redisClient.hgetall(newSession, function(err, object) {
+                console.log(object);
+            });
 
             let response = {
                 id : loginInfo.id,
@@ -84,21 +85,24 @@ function Get(req, res, next) {
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
 
-    if (inId in users){// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
-        let data = {
-            id : users[inId].id,
-            username : users[inId].username,
-            avatar : users[inId].avatar
-        };
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));   
-    }
-
+    redisClient.exists(inSession, function(err, reply) {
+        if (reply === 1) {
+            if (inToken ==  redisClient.hget(inSession, 'token')){
+                let data = {
+                    id       : redisClient.hget(inSession, 'id'),
+                    username : redisClient.hget(inSession, 'username'),
+                    avatar   : redisClient.hget(inSession, 'avatar')
+                };
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
+            }
+        }
+    });
     let data = {
         id : null,
         username : null,
         avatar : null
     };  
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));       
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
 }
 
 function Find(req, res, next){
@@ -106,24 +110,24 @@ function Find(req, res, next){
     let inSession  = req.body._session || req.query._session;
     let inToken    = req.body._token   || req.query._token;
     
-    if(inUsername in usernamesToIDs){
-        let userID = usernamesToIDs[inUsername];
-        if (userID in users){// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
-            let data = {
-                id : users[userID].id,
-                username : users[userID].username,
-                avatar : users[userID].avatar
-            };
-            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));   
+    redisClient.exists(inSession, function(err, reply) {
+        if (reply === 1) {
+            if (inToken ==  redisClient.hget(inSession, 'token')){
+                let data = {
+                    id       : redisClient.hget(inSession, 'id'),
+                    username : redisClient.hget(inSession, 'username'),
+                    avatar   : redisClient.hget(inSession, 'avatar')
+                };
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
+            }
         }
-    }
-
+    });
     let data = {
         id : null,
         username : null,
         avatar : null
     };  
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));      
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
 }
 
 function Update(req, res, next){
@@ -134,37 +138,40 @@ function Update(req, res, next){
     let oldPassword = req.body.oldPassword || req.query.oldPassword;
     let newPassword = req.body.newPassword || req.query.newPassword;
     let session     = req.body._session    || req.query._session || req.params._session;
-    let token       = req.body._token      || req.query._token || req.params._token;
+    let token       = req.body._token      || req.query._token   || req.params._token;
 
     let data = {
         passwordChanged : null,
         avatar : null
     };  
 
-    if (id in users){
-        if (oldPassword && newPassword){
-            if (oldPassword == users[id].password){
-                users[id].password = newPassword;
-                data.passwordChanged = true;
-            }else{
-                let reason  = {
-                    oldPassword : "Forbidden"
-                };
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason :reason }))); 
-            }
-        }    
-    
-        if (avatar){
-            users[id].avatar = avatar; 
-            data.avatar = avatar;   
-        }
-
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));       
+     redisClient.exists(inSession, function(err, reply) {
+        if (reply === 1) {
+            if (id in users){
+                if (oldPassword && newPassword){
+                    if (oldPassword == users[id].password){
+                        users[id].password = newPassword;
+                        data.passwordChanged = true;
+                    }else{
+                        let reason  = {
+                            oldPassword : "Forbidden"
+                        };
+                        return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason :reason }))); 
+                    }
+                }    
+            
+                if (avatar){
+                    users[id].avatar = avatar; 
+                    data.avatar = avatar;   
+                    redisClient.hmset(inSession, { // Using hmset cause not sure of syntax for hset
+                        'avatar' : avatar
+                    });
+                }
+        
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));       
+        }   
     }
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
-
-
-
 }
 
 // this function is exported so it can be called from app.js
