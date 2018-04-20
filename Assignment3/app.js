@@ -5,7 +5,6 @@ var redis   = require('redis');     // redis used for sessions
 var mysql   = require('mysql');
 
 var app = express();                // init express	
-var redisClient = redis.createClient(); 
 var connection = mysql.createConnection({
            host: 'ip-172-31-17-148.us-west-2.compute.internal',
            user: 'cs261-app',
@@ -13,14 +12,7 @@ var connection = mysql.createConnection({
            database: 'massteroids'
           });
 
-connection.connect();
-exports.GetSQLConnection = () => {
-	return connection;
-}
 
-exports.GetRedisClient =() => {
-	return redisClient;
-}
 
 const bodyParser 	 = require('body-parser');
 app.use(bodyParser.json())
@@ -37,5 +29,20 @@ app.get(apiRoot, function(req, res) {
 	res.send('Hello world!');	
 });
 
+connection.connect(err => {
+    console.log ("connection : " + err);
+});
+
+var redisClient = redis.createClient(6379, 'ip-172-31-17-148.us-west-2.compute.internal'); 
+
 let server = app.listen(8123);
 console.log("listening");
+
+
+exports.GetSQLConnection = () => {
+	return connection;
+}
+
+exports.GetRedisClient =() => {
+	return redisClient;
+}
