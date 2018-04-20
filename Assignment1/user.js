@@ -165,7 +165,10 @@ function Update(req, res, next){
                 users[id].password = newPassword;
                 data.passwordChanged = true;
             }else{
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', "oldPassword" : "Forbidden"  }))); 
+                let reason  = {
+                    oldPassword : "Forbidden" ;
+                }
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason  }))); 
             }
         }    
     
