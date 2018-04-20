@@ -96,8 +96,8 @@ function Get(req, res, next) {
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
 
-    redisClient.exists(inSession, function(err, reply) {
-        if (reply === 1) {
+    redisClient.hgetall(inSession, function(err, reply) { // doing instead of exists
+        if (!err) {
             if (inToken ==  redisClient.hget(inSession, 'token')){
                 let data = {
                     id       : redisClient.hget(inSession, 'id'),
@@ -121,8 +121,8 @@ function Find(req, res, next){
     let inSession  = req.body._session || req.query._session;
     let inToken    = req.body._token   || req.query._token;
     
-    redisClient.exists(inSession, function(err, reply) {
-        if (reply === 1) {
+    redisClient.hgetall(inSession, function(err, reply) {
+        if (!err === 1) {
             if (inToken ==  redisClient.hget(inSession, 'token')){
                 let data = {
                     id       : redisClient.hget(inSession, 'id'),
@@ -156,8 +156,8 @@ function Update(req, res, next){
         avatar : null
     };  
 
-     redisClient.exists(inSession, function(err, reply) {
-        if (reply === 1) {
+     redisClient.hgetall(inSession, function(err, reply) {
+        if (!err) {
             if (id in users){
                 if (oldPassword && newPassword){
                     if (oldPassword == users[id].password){
