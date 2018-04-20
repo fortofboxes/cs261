@@ -22,7 +22,8 @@ function Create(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
     let inAvatar   = req.body.avatar   || req.query.avatar;
-    
+    console.log(users);
+    console.log("in: " +inUsername);
     if (inUsername in users){
         reason = { username : 'Already taken'}
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
