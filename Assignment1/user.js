@@ -142,7 +142,12 @@ function Find(req, res, next){
             }
         }
     }
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : 'Invalid Information'  })));       
+    let data = {
+        id : null,
+        username : null,
+        avatar : null
+    }; 
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));       
 }
 
 function Update(req, res, next){
