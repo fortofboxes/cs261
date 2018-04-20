@@ -34,14 +34,6 @@ function Create(req, res, next) {
         let newID = uuid(); 
         let salt = GetSalt();
         let passHash = CreateHash(inPassword, salt);
-        //  HOW TO HASH PASSWORD???
-        
-        //let user = {
-        //    id       : newID,
-        //    username : inUsername,
-        //    password : inPassword,
-        //    avatar   : inAvatar,
-        //}
 
          let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
          let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
@@ -50,14 +42,11 @@ function Create(req, res, next) {
            console.log("1 record inserted");
          });
 
-         // No longer have usernames to IDs
-
-        //users[newID] = user;
-        //usernamesToIDs[inUsername] = newID;
+        usernamesToIDs[inUsername] = newID;
 
         let response = {
-            id : user.id,
-            username : user.username
+            id : newID,
+            username : inUsername
         };
 
         return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
