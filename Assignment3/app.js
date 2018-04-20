@@ -4,7 +4,7 @@ var express = require('express');   // express server
 var redis   = require('redis');     // redis used for sessions 
 var mysql   = require('mysql');
 
-var app = express();                // init express
+var app = express();                // init express	
 var redisClient = redis.createClient(); 
 var connection = mysql.createConnection({
            host: 'ip-172-31-17-148.us-west-2.compute.internal',
@@ -13,6 +13,7 @@ var connection = mysql.createConnection({
            database: 'massteroids'
           });
 
+connection.connect();
 exports.GetSQLConnection = () => {
 	return connection;
 }
