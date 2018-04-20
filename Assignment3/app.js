@@ -7,7 +7,7 @@ var mysql   = require('mysql');
 var app = express();                // init express
 var redisClient = redis.createClient(); 
 var connection = mysql.createConnection({
-           host: '172.31.17.148',
+           host: 'ip-172-31-17-148.us-west-2.compute.internal',
            user: 'cs261-app',
            password: 'pickagoodpassword',
            database: 'massteroids'
