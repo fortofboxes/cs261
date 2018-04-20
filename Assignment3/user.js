@@ -1,21 +1,14 @@
 
 var app = require('./app.js');   // express server
+var uuid = require('uuid/v1');
+var mysql = require('mysql'),
+
 var redisClient = app.GetRedisClient();
+var connection = app.GetSQLConnection();
 
 let users     = {}; // ID TO USER
 let usernamesToIDs = {}; // username to ID
 let loggedOnUsers = {}; // ID to user
-
-
-function GenerateID() {
-  let unique = false;
-  let newID = 0;
-  do {
-        newID = Math.floor(Math.random() * Math.floor(10000));
-
-    }while( newID in users);
-    return newID;
-}
 
 function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
@@ -30,16 +23,25 @@ function Create(req, res, next) {
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
 
     } else {
-        let newID = GenerateID();
-        let user = {
-            username : inUsername,
-            password : inPassword,
-            avatar   : inAvatar,
-            id       : newID
-        };
+        let newID = uuid();
+        //let user = {
+        //    id       : newID,
+        //    username : inUsername,
+        //    password : inPassword,
+        //    avatar   : inAvatar,
+        //};
 
-        users[newID] = user;
-        usernamesToIDs[inUsername] = newID;
+        //what is salt?
+        var sql = "INSERT INTO user (id, username, password, avatar) VALUES (newID, inUsername, inPassword, inAvatar)"; // Does password hash need to happen?? w
+         connection.query(sql, function (err, result) {
+           if (err) throw err;
+           console.log("1 record inserted");
+         });
+
+         // No longer have usernames to IDs
+
+        //users[newID] = user;
+        //usernamesToIDs[inUsername] = newID;
 
         let response = {
             id : user.id,
@@ -53,40 +55,44 @@ function Create(req, res, next) {
 function Login(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
-    console.log("here0");
+        
 
-    let userCount = users.length;
+    connection.query('SELECT * FROM `user` WHERE `id` = usernamesToIDs[inUsername]', function (error, results, fields) {
+    // error will be an Error if one occurred during the query
+    console.log("error" +  errors);
+    
+    console.log("results" +  results);
+    console.log("fields" + fields);
+
+    // results will contain the results of the query
+    // fields will contain information about the returned results fields (if any)
+    });
+
     if (inUsername in usernamesToIDs){
         if(users[usernamesToIDs[inUsername]].password == inPassword){
 
            let newSession = GenerateInteger();
            let newToken   = GenerateInteger();
-           console.log("here1");
            redisClient.hmset(newSession, {
             'id'       : users[usernamesToIDs[inUsername]].id,
             'username' : inUsername,
             'token'    : newToken,
             'avatar'   : users[usernamesToIDs[inUsername]].avatar
            });
-           console.log("here2");
 
             redisClient.hgetall(newSession, function(err, object) {
                 console.log(object);
             });
-           console.log("here3");
 
             let response = {
                 id : users[usernamesToIDs[inUsername]].id,
                 session : newSession,
                 token : newToken
             };
-           console.log("here4");
 
             return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));     
         }
     }    
-           console.log("here5");
-
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : 'Username/password mismatch' })));
 }
 

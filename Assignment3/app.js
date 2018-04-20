@@ -5,11 +5,17 @@ var redis   = require('redis');     // redis used for sessions
 
 var app = express();                // init express
 var redisClient = redis.createClient(); 
-//redisClient.on('connect', function() {
-//    app.listen(6379); // does this need to be 8123
-//});
+var connection = mysql.createConnection({
+           host: '172.31.17.148'
+           user: 'cs261-app',
+           password: 'pickagoodpassword'
+           database: 'massteroids'
+          });
 
-// BASICALLY JUST NEED to have session information stored in redis?
+exports.GetSQLConnection = () => {
+	return connection;
+}
+
 exports.GetRedisClient =() => {
 	return redisClient;
 }
