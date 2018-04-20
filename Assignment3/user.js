@@ -168,9 +168,10 @@ function Update(req, res, next){
                     });
                 }
         
-            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));       
-        }   
-    }
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));       
+            }   
+        }
+    });
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
 }
 
