@@ -12,7 +12,13 @@ var connection = mysql.createConnection({
            database: 'massteroids'
           });
 
+exports.GetSQLConnection = () => {
+	return connection;
+}
 
+exports.GetRedisClient =() => {
+	return redisClient;
+}
 
 const bodyParser 	 = require('body-parser');
 app.use(bodyParser.json())
@@ -38,11 +44,3 @@ var redisClient = redis.createClient(6379, 'ip-172-31-17-148.us-west-2.compute.i
 let server = app.listen(8123);
 console.log("listening");
 
-
-exports.GetSQLConnection = () => {
-	return connection;
-}
-
-exports.GetRedisClient =() => {
-	return redisClient;
-}
