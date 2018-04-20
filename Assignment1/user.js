@@ -99,14 +99,14 @@ function Get(req, res, next) {
     for (var user in loggedOnUsers){
         console.log(loggedOnUsers[user].id);
     }
-    
+
     console.log("inID : " + inId);
 
-    if (inId in loggedOnUsers && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
+    if (inId in users)// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
         let response = {
-            id : loggedOnUsers[i].id,
-            username : loggedOnUsers[i].username,
-            avatar : loggedOnUsers[i].avatar
+            id : users[inId].id,
+            username : users[inId].username,
+            avatar : users[inId].avatar
         };
         return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response  })));   
     }
