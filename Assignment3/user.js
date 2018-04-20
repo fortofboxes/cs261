@@ -53,6 +53,7 @@ function Create(req, res, next) {
 function Login(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
+    console.log("here0");
 
     let userCount = users.length;
     if (inUsername in usernamesToIDs){
@@ -60,27 +61,32 @@ function Login(req, res, next) {
 
            let newSession = GenerateInteger();
            let newToken   = GenerateInteger();
-
+           console.log("here1");
            redisClient.hmset(newSession, {
             'id'       : users[usernamesToIDs[inUsername]].id,
             'username' : inUsername,
             'token'    : newToken,
             'avatar'   : users[usernamesToIDs[inUsername]].avatar
            });
+           console.log("here2");
 
             redisClient.hgetall(newSession, function(err, object) {
                 console.log(object);
             });
+           console.log("here3");
 
             let response = {
                 id : loginInfo.id,
                 session : newSession,
                 token : newToken
             };
+           console.log("here4");
 
             return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));     
         }
     }    
+           console.log("here5");
+
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : 'Username/password mismatch' })));
 }
 
