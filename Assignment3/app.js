@@ -6,9 +6,9 @@ var redis   = require('redis');     // redis used for sessions
 var app = express();                // init express
 var redisClient = redis.createClient(); 
 var connection = mysql.createConnection({
-           host: '172.31.17.148'
+           host: '172.31.17.148', // private ip?
            user: 'cs261-app',
-           password: 'pickagoodpassword'
+           password: 'pickagoodpassword',
            database: 'massteroids'
           });
 
