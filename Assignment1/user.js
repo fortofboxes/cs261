@@ -72,7 +72,7 @@ function Login(req, res, next) {
             loggedOnUsers[loginInfo.id] = loginInfo;
 
             let response = {
-                id : users[i].id,
+                id : loginInfo.id,
                 session : newSession,
                 token : newToken
             };
