@@ -2,7 +2,7 @@
 
 var express = require('express');   // express server
 var redis   = require('redis');     // redis used for sessions 
-var mysql   = require('mysql'),
+var mysql   = require('mysql');
 
 var app = express();                // init express
 var redisClient = redis.createClient(); 

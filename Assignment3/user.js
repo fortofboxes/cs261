@@ -1,7 +1,6 @@
 
 var app = require('./app.js');   // express server
 var uuid = require('uuid/v1');
-var mysql = require('mysql'),
 
 var redisClient = app.GetRedisClient();
 var connection = app.GetSQLConnection();
@@ -61,7 +60,7 @@ function Login(req, res, next) {
     // error will be an Error if one occurred during the query
     console.log("error" +  errors);
     
-    console.log("results" +  results);
+    console.log("results" +  results);  
     console.log("fields" + fields);
 
     // results will contain the results of the query
