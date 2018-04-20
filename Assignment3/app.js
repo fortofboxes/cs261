@@ -3,12 +3,12 @@
 var express = require('express');   // express server
 var redis   = require('redis');     // redis used for sessions 
 var mysql   = require('mysql');
-
 var app = express();                // init express	
+
 var connection = mysql.createConnection({
            host: 'ip-172-31-17-148.us-west-2.compute.internal',
            user: 'cs261-app',
-           password: 'pickagoodpassword',
+           password: 'Barney!01',
            database: 'massteroids'
           });
 
