@@ -128,9 +128,9 @@ function Find(req, res, next){
         let userID = usernamesToIDs[inUsername];
         if (userID in users){// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
             let data = {
-                id : users[inId].id,
-                username : users[inId].username,
-                avatar : users[inId].avatar
+                id : users[userID].id,
+                username : users[userID].username,
+                avatar : users[userID].avatar
             };
             return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));   
         }
@@ -153,6 +153,33 @@ function Update(req, res, next){
     let newPassword = req.body.newPassword || req.query.newPassword;
     let session     = req.body._session    || req.query._session || req.params._session;
     let token       = req.body._token      || req.query._token || req.params._token;
+
+    let data = {
+        passwordChanged : null,
+        avatar : null
+    };  
+
+    if (id in users){
+        if (oldPassword && newPassword){
+            if (oldPassword == users[id].password){
+                users[id].password = newPassword;
+                data.passwordChanged = true;
+            }else{
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', "oldPassword" : "Forbidden"  }))); 
+            }
+        }    
+    
+        if (avatar){
+            users[id].avatar = avatar; 
+            data.avatar = avatar;   
+        }
+
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));       
+    }
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+
+
+
 }
 
 // this function is exported so it can be called from app.js
