@@ -6,10 +6,13 @@ var redis   = require('redis');     // redis used for sessions
 var app = express();                // init express
 var redisClient = redis.createClient(); 
 redisClient.on('connect', function() {
-    app.listen(6379); // does this need to be 8123
+    redisClient.listen(6379); // does this need to be 8123
 });
 
 // BASICALLY JUST NEED to have session information stored in redis?
+exports.GetRedisClient =() => {
+	return redisClient;
+}
 
 const bodyParser 	 = require('body-parser');
 app.use(bodyParser.json())

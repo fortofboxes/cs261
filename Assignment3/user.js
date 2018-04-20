@@ -1,6 +1,11 @@
+
+var app = require('./app.js');   // express server
+var redisClient = app.GetRedisClient();
+
 let users     = {}; // ID TO USER
 let usernamesToIDs = {}; // username to ID
 let loggedOnUsers = {}; // ID to user
+
 
 function GenerateID() {
   let unique = false;
