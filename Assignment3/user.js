@@ -1,6 +1,7 @@
 
-var app = require('./app.js');   // express server
-var uuid = require('uuid/v1');
+var app    = require('./app.js');   // express server
+var uuid   = require('uuid/v1');
+var crypto = require('crypto');
 
 var redisClient = app.GetRedisClient();
 var connection = app.GetSQLConnection();
@@ -23,6 +24,9 @@ function Create(req, res, next) {
 
     } else {
         let newID = uuid();
+        //var newhash = crypto.createHash('sha512')
+        //         .update(result[0].salt + password, 'utf8')
+        //         .digest('hex');
         //let user = {
         //    id       : newID,
         //    username : inUsername,
@@ -33,7 +37,7 @@ function Create(req, res, next) {
         //what is salt?
         var sql = "INSERT INTO user (id, username, password, avatar) VALUES (newID, inUsername, inPassword, inAvatar)"; // Does password hash need to happen?? w
          connection.query(sql, function (err, result) {
-           if (err) throw err;
+           if (err) console.log("ISSUE ON CREATE");
            console.log("1 record inserted");
          });
 
