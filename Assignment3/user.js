@@ -14,6 +14,14 @@ function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
 }
 
+function GetSalt(){
+    return Math.round((Date.now() * Math.random())) + ' ';
+}
+
+function CreateHash(password, salt){
+    return  crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
+}
+
 function Create(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
@@ -24,10 +32,10 @@ function Create(req, res, next) {
 
     } else {
         let newID = uuid();
+        let salt = GetSalt();
+        let passHash = CreateHash(inPassword, salt);
         //  HOW TO HASH PASSWORD???
-        //var newhash = crypto.createHash('sha512')
-        //         .update(result[0].salt + password, 'utf8')
-        //         .digest('hex');
+        
         //let user = {
         //    id       : newID,
         //    username : inUsername,
@@ -35,7 +43,7 @@ function Create(req, res, next) {
         //    avatar   : inAvatar,
         //}
 
-         let sql = 'INSERT INTO user (id, username, passwordhash, avatar_url) VALUES (newID, inUsername, inPassword, inAvatar)'; 
+         let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES (newID, inUsername, passHash, salt, inAvatar)'; 
          connection.query(sql, function (err, result, fields) {
            if (err) console.log("ISSUE ON CREATE " + err);
            console.log("1 record inserted");
