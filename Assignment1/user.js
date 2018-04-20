@@ -89,9 +89,18 @@ function Get(req, res, next) {
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
 
+    console.log("USERS:");
+    for (var user in users){
+        console.log(users[user].id);
+    }
+
+
+    console.log("lOGGEDoN:");
+    for (var user in loggedOnUsers){
+        console.log(loggedOnUsers[user].id);
+    }
+    
     console.log("inID : " + inId);
-    console.log("inses : " + inSession);
-    console.log("intoken: " + inToken);
 
     if (inId in loggedOnUsers && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
         let response = {
