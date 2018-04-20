@@ -126,12 +126,13 @@ function Find(req, res, next){
     
     if(inUsername in usernamesToIDs){
         let userID = usernamesToIDs[inUsername];
-        if (loggedOnUsers[userID].session == inSession && loggedOnUsers[userID].token == inToken){
-            let response = {
-                    id : loggedOnUsers[i].id,
-                    username : loggedOnUsers[i].username
+        if (userID in users){// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
+            let data = {
+                id : users[inId].id,
+                username : users[inId].username,
+                avatar : users[inId].avatar
             };
-            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));       
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));   
         }
     }
 
@@ -139,8 +140,8 @@ function Find(req, res, next){
         id : null,
         username : null,
         avatar : null
-    }; 
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));       
+    };  
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));      
 }
 
 function Update(req, res, next){
