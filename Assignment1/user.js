@@ -1,5 +1,6 @@
-let users     = [];
-let loggedOnUsers = [];
+let users     = {}; // ID TO USER
+let usernamesToIDs = {}; // username to ID
+let loggedOnUsers = {}; // ID to user
 let sessionCurrent = 10;
 let tokenCurrent = 0;
 
@@ -9,17 +10,7 @@ function GenerateID() {
   do {
         newID = Math.floor(Math.random() * Math.floor(10000));
 
-        let userCount = users.length;
-        unique = true;
-        for (let i = 0; i < userCount; i++) {
-            if (users[i].id ==  newID){
-                unique = false;
-                break;
-            }
-
-        }
-
-    }while( !unique);
+    }while( newID in users);
     return newID;
 }
 
@@ -32,20 +23,11 @@ function Create(req, res, next) {
     let inPassword = req.body.password || req.query.password;
     let inAvatar   = req.body.avatar   || req.query.avatar;
     
-    let userCount = users.length;
-    let isDuplicate = false;
-    for (let i = 0; i < userCount; i++) {
-        if (users[i].username == inUsername){
-            isDuplicate = true;
-            break;
-        }
-    }
-    if (isDuplicate)    {
+    if (inUsername in users){
         reason = { username : 'Already taken'}
-
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
-    } else {
 
+    } else {
         let newID = GenerateID();
         let user = {
             username : inUsername,
@@ -54,9 +36,8 @@ function Create(req, res, next) {
             id       : newID
         };
 
-        users.push(user);
-        console.log("created : " + user.username );
-        console.log("with id : " + user.id );
+        users[newID] = user;
+        usernamesToIDs[inUsername] = newID;
 
         let response = {
             id : user.id,
@@ -71,37 +52,33 @@ function Login(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
 
+    console.log("Attempted login: " + inUsername);
     let userCount = users.length;
-    for (let i = 0; i < userCount; i++) {
+    if (inUsername in usernamesToIDs){
+        if(users[usernamesToIDs[inUsername]].password == inPassword){
 
-        if (users[i].username == inUsername){
-            if (users[i].password == inPassword){
-                
-                let newSession = GenerateInteger();
-                let newToken   = GenerateInteger();
+           let newSession = GenerateInteger();
+           let newToken   = GenerateInteger();
 
-                let loginInfo = {
-                    id : users[i].id,
+           let loginInfo = {
+                    id : users[usernamesToIDs[inUsername]].id,
                     session : newSession,
                     token : newToken,
-                    avatar : users[i].avatar,
-                    username : users[i].username
+                    avatar : users[usernamesToIDs[inUsername]].avatar,
+                    username : inUsername
                 }; 
-                loggedOnUsers.push(loginInfo);
 
-                let response = {
-                    id : users[i].id,
-                    session : newSession,
-                    token : newToken
-                };
+            loggedOnUsers[loginInfo.id] = loginInfo;
 
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));       
-            } else {
-                break;
-            }
+            let response = {
+                id : users[i].id,
+                session : newSession,
+                token : newToken
+            };
 
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));     
         }
-    }
+    }    
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : 'Username/password mismatch' })));
 }
 
@@ -111,29 +88,17 @@ function Get(req, res, next) {
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
 
- console.log("inID : " + inId);
- console.log("inses : " + inSession);
- console.log("intoken: " + inToken);
+    console.log("inID : " + inId);
+    console.log("inses : " + inSession);
+    console.log("intoken: " + inToken);
 
-    
-    let loggedOnCount = loggedOnUsers.length;
-    for (let i = 0; i < loggedOnCount; i++) {
-         console.log("logged on: : " + loggedOnUsers[i].id);
-
-        if (inId == loggedOnUsers[i].id){
-            if(inSession == loggedOnUsers[i].session &&
-               inToken   == loggedOnUsers[i].token){
-                
-                let response = {
-                    id : loggedOnUsers[i].id,
-                    username : loggedOnUsers[i].username,
-                    avatar : loggedOnUsers[i].avatar
-                };
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response  })));       
-            } else {
-                break;
-            }
-        }
+    if (inId in loggedOnUsers && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
+        let response = {
+            id : loggedOnUsers[i].id,
+            username : loggedOnUsers[i].username,
+            avatar : loggedOnUsers[i].avatar
+        };
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response  })));   
     }
 
     let data = {
@@ -149,22 +114,17 @@ function Find(req, res, next){
     let inSession  = req.body._session || req.query._session;
     let inToken    = req.body._token   || req.query._token;
     
-    let loggedOnCount = loggedOnUsers.length;
-    for (let i = 0; i < loggedOnCount; i++) {
-        if (inUsername == loggedOnUsers[i].username){
-            if(inSession == loggedOnUsers[i].session &&
-               inToken   == loggedOnUsers[i].token){
-                
-                let response = {
+    if(inUsername in usernamesToIDs){
+        let userID = usernamesToIDs[inUsername];
+        if (loggedOnUsers[userID].session == inSession && loggedOnUsers[userID].token == inToken){
+            let response = {
                     id : loggedOnUsers[i].id,
                     username : loggedOnUsers[i].username
-                };
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));       
-            } else {
-                break;
-            }
+            };
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));       
         }
     }
+
     let data = {
         id : null,
         username : null,
