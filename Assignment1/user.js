@@ -103,12 +103,12 @@ function Get(req, res, next) {
     console.log("inID : " + inId);
 
     if (inId in users){// && loggedOnUsers[inId].session == inSession && loggedOnUsers[inId].token == inToken){
-        let response = {
+        let data = {
             id : users[inId].id,
             username : users[inId].username,
             avatar : users[inId].avatar
         };
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));   
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));   
     }
 
     let data = {
