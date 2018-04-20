@@ -108,7 +108,7 @@ function Get(req, res, next) {
             username : users[inId].username,
             avatar : users[inId].avatar
         };
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', response  })));   
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));   
     }
 
     let data = {
