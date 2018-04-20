@@ -31,7 +31,7 @@ function Create(req, res, next) {
         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
 
     } else {
-        let newID = uuid();
+        let newID = uuid(); 
         let salt = GetSalt();
         let passHash = CreateHash(inPassword, salt);
         //  HOW TO HASH PASSWORD???
@@ -43,8 +43,9 @@ function Create(req, res, next) {
         //    avatar   : inAvatar,
         //}
 
-         let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES (newID, inUsername, passHash, salt, inAvatar)'; 
-         connection.query(sql, function (err, result, fields) {
+         let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
+         let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
+         connection.query(sql, [values], function (err, result, fields) {
            if (err) console.log("ISSUE ON CREATE " + err);
            console.log("1 record inserted");
          });
