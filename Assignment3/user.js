@@ -76,7 +76,7 @@ function Login(req, res, next) {
            console.log("here3");
 
             let response = {
-                id : loginInfo.id,
+                id : users[usernamesToIDs[inUsername]].id,
                 session : newSession,
                 token : newToken
             };
