@@ -93,7 +93,7 @@ function Login(req, res, next) {
     });
 }
 
-function Get(req, res, next{
+function Get(req, res, next){
     let inId      = req.body.id       || req.query.id || req.params.id;    
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
