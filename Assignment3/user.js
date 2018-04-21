@@ -97,7 +97,11 @@ function Get(req, res, next) {
     let inId      = req.body.id       || req.query.id || req.params.id;    
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
-
+    let data = {
+        id : null,
+        username : null,
+        avatar : null
+    };  
     connection.query('SELECT * FROM user WHERE id = ?', [inId], (err, object) => 
     {
         if(object.length > 0)
@@ -111,23 +115,15 @@ function Get(req, res, next) {
                             avatar   : object[0].avatar
                         };
                         return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
+                    }else {
+                          return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
                     }
+
                 } else {
-                    let data = {
-                        id : null,
-                        username : null,
-                        avatar : null
-                    };  
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+                    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
                 }
             });
-        }
-        else{
-            let data = {
-                id : null,
-                username : null,
-                avatar : null
-            };  
+        } else {
             return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
         }
     } 
