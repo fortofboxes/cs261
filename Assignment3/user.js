@@ -5,7 +5,6 @@ var crypto = require('crypto');
 
 var redisClient = app.GetRedisClient();
 var connection = app.GetSQLConnection();
-console.log("HERE:S");
 function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
 }
@@ -25,7 +24,6 @@ function Create(req, res, next) {
     let newID = uuid(); 
     let salt = GetSalt();
     let passHash = CreateHash(inPassword, salt);
-    
 
     let sql = 'SELECT * FROM user WHERE username = ?';
     connection.query(sql,inUsername, function (error, results, fields) {
