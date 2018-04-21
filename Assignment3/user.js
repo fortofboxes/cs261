@@ -203,7 +203,7 @@ function Update(req, res, next){
                             
                             }else{
                                 let reason = { 'oldPassword' : 'Forbidden'}
-                                 return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : reason  })));   
+                                 return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason  })));   
                             }
                         }
                         if ((oldPassword && newPassword) || avatar){
