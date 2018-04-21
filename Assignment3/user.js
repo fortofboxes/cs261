@@ -93,11 +93,11 @@ function Login(req, res, next) {
     });
 }
 
-function Get(req, res, next) {
+function Get(req, res, next{
     let inId      = req.body.id       || req.query.id || req.params.id;    
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
-    let data = {
+    let data =     {
         id : null,
         username : null,
         avatar : null
@@ -126,7 +126,7 @@ function Get(req, res, next) {
         } else {
             return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
         }
-    } 
+    }); 
 }
 
 function Find(req, res, next){
