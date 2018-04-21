@@ -13,8 +13,8 @@ function GetSalt(){
     return Math.round((Date.now() * Math.random())) + ' ';
 }
 
-function CreateHash(password, salt){
-    return password; crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
+function CreateHash(password, salt){ // This wasnt creating a consistent hash..
+    return password + '2'; //crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
 }
 
 function Create(req, res, next) {
@@ -179,50 +179,49 @@ function Update(req, res, next){
         passwordChanged : null,
         avatar : null
     };  
-    let newPasswordHash  = null;
-     redisClient.hgetall(inSession, function(err, reply) {
-        if (!err) {
-            let sql = 'SELECT * FROM user WHERE username = ?';
-            connection.query(sql,[inUsername], function (error, results, fields) {
-            if (error) console.log(error);
-                if (results.length > 0){
-                    if (oldPassword && newPassword){
-                        let oldPass =  CreateHash(oldPassword, results[0].salt);
-                        if (oldPassword == results[0].passwordhash){
-                            newPasswordHash = CreateHash(newPassword,results[0].salt);
-                            data.passwordChanged = true;
-                        } else {
-                            let reason  = {
-                                oldPassword : "Forbidden"
-                            };
-                            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason :reason }))); 
-                        } 
+
+    connection.query('SELECT * FROM user WHERE id = ?', [inId], (err, object) => 
+    {
+        if(object.length > 0)
+        {
+            redisClient.hgetall(inSession, function(err, redisObject) { // this validates the session
+                if (!err) {
+                    if (inToken == redisObject.token){ // validate token
+
+                        if (avatar){
+                            let sql = 'UPDATE user SET avatar_url = ? WHERE id = ?';
+                            connection.query(sql, [avatar, id], function(error,result){});
+                            data.avatar = avatar;
+                            //Update redis
+                        }
+                        if (oldPassword && newPassword){
+                            if (CreateHash(oldPassword, object[0].salt) == object[0].passwordhash){
+                                let newPassHash = CreateHash(newPassword,object[0].salt);
+                                let sql = 'UPDATE user SET passwordhash = ? WHERE id = ?';
+                                connection.query(sql, [newPassHash, id], function(error,result){});
+                                data.passwordChanged = true;
+                            }else{
+                                 return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+                            }
+                        }
+                        if ((oldPassword && newPassword) || avatar){
+                          return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));   
+                        }
+                    
+                    }else {
+                          return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
                     }
-                    if (avatar){
-                        data.avatar = avatar;   
-                        redisClient.hmset(inSession, { // Using hmset cause not sure of syntax for hset
-                            'avatar' : avatar
-                        });
-                    }
-                    if (newPasswordHash){
-                        let sql = 'UPDATE user SET passwordhash = ? WHERE id = ?';
-                        connection.query(sql,[newPasswordHash, id], function (error, result ){});
-                    }
-                    if (avatar){
-                        let sql = 'UPDATE user SET avatar_url = ? WHERE id = ?';
-                        connection.query(sql,[avatar, id], function (error, result ){});
-                    }
-                    return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));
-                }   
+
+                } else {
+                    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+                }
             });
-        }
-        else{
+        } else {
             return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
         }
-    });
+    }); 
 }
 
-// this function is exported so it can be called from app.js
 module.exports.register = function (app, root) {
     app.post(root  + 'create',         Create);
     app.post(root  + ':id/update',     Update);
