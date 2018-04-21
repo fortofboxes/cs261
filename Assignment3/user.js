@@ -58,6 +58,7 @@ function Login(req, res, next) {
     connection.query(sql,inUsername, function (error, results, fields) {
         if (error) console.log(error);
         if (results.length > 0){
+            console.log("password no hash: " + newPassword);
             let pass =  CreateHash(inPassword, results[0].salt);
             console.log("Password: " +results[0].passwordhash);
             console.log("newPassword: " +pass);
@@ -167,7 +168,8 @@ function Update(req, res, next){
         if (!err) {
             let sql = 'SELECT * FROM user WHERE username = ?';
             connection.query(sql,inUsername, function (error, results, fields) {
-                if (results.length > 0 ){
+            if (error) console.log(error);
+                if (results.length > 0){
                     if (oldPassword && newPassword){
                         let oldPass =  CreateHash(oldPassword, results[0].salt);
                         if (oldPassword == results[0].passwordhash){
