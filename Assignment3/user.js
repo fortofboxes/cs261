@@ -68,7 +68,7 @@ function Login(req, res, next) {
         console.log("results back login:");
         if (results.length > 0){
 
-            console.log("results" +  results[0]);  
+            console.log("resultID" +  results[0].id);  
             console.log("fields" + fields);
     
             let newSession = GenerateInteger();
