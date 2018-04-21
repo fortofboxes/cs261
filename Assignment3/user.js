@@ -58,40 +58,36 @@ function Login(req, res, next) {
     let sql = 'SELECT * FROM user WHERE username = inUsername';
     connection.query(sql, function (error, results, fields) {
     // error will be an Error if one occurred during the query
-    console.log("error" +  error);
+        console.log("error" +  error);
     
-    console.log("results" +  results);  
-    console.log("fields" + fields);
+        console.log("results" +  results);  
+        console.log("fields" + fields);
 
-    // results will contain the results of the query
-    // fields will contain information about the returned results fields (if any)
-    });
-
-    if (inUsername in usernamesToIDs){
-        if(users[usernamesToIDs[inUsername]].password == inPassword){
-
-           let newSession = GenerateInteger();
-           let newToken   = GenerateInteger();
-           redisClient.hmset(newSession, {
-            'id'       : users[usernamesToIDs[inUsername]].id,
+    
+        let newSession = GenerateInteger();
+        let newToken   = GenerateInteger();
+        redisClient.hmset(newSession, {
+            'id'       : results.id,
             'username' : inUsername,
             'token'    : newToken,
-            'avatar'   : users[usernamesToIDs[inUsername]].avatar
-           });
+            'avatar'   : results.avatar_url
+       });
 
-            redisClient.hgetall(newSession, function(err, object) {
-                console.log(object);
-            });
+        redisClient.hgetall(newSession, function(err, object) {
+            console.log(object);
+        });
 
-            let response = {
-                id : users[usernamesToIDs[inUsername]].id,
-                session : newSession,
-                token : newToken
-            };
+        let response = {
+            id : results.id,
+            session : newSession,
+            token : newToken
+        };
 
-            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));     
-        }
-    }    
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));     
+        
+    });
+
+     
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : 'Username/password mismatch' })));
 }
 
