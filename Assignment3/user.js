@@ -32,6 +32,7 @@ function Create(req, res, next) {
 
     let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
     let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
+
     connection.query(sql, [values], function (err, result, fields) {
         if (err){
            reason = { username : 'Already taken'}
@@ -41,14 +42,13 @@ function Create(req, res, next) {
        
            console.log("1 record inserted");
         }
-        });
+    });
 
-        let response = {
-            id : newID,
-            username : inUsername
-        };
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
-    }
+    let response = {
+        id : newID,
+        username : inUsername
+    };
+    return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
 }
 
 function Login(req, res, next) {
