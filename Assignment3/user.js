@@ -173,7 +173,7 @@ function Update(req, res, next){
     let oldPassword = req.body.oldPassword || req.query.oldPassword;
     let newPassword = req.body.newPassword || req.query.newPassword;
     let inSession   = req.body._session    || req.query._session || req.params._session;
-    let token       = req.body._token      || req.query._token   || req.params._token;
+    let inToken       = req.body._token      || req.query._token   || req.params._token;
 
     let data = {
         passwordChanged : null,
