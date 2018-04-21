@@ -6,10 +6,6 @@ var crypto = require('crypto');
 var redisClient = app.GetRedisClient();
 var connection = app.GetSQLConnection();
 
-let users     = {}; // ID TO USER
-let usernamesToIDs = {}; // username to ID
-let loggedOnUsers = {}; // ID to user
-
 function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
 }
@@ -154,47 +150,58 @@ function Find(req, res, next){
 
 function Update(req, res, next){
     let id          = req.body.id          || req.query.id || req.params.id;
-    let username    = req.body.username    || req.query.username;
+    let inUsername  = req.body.username    || req.query.username;
     let password    = req.body.password    || req.query.password;
     let avatar      = req.body.avatar      || req.query.avatar;
     let oldPassword = req.body.oldPassword || req.query.oldPassword;
     let newPassword = req.body.newPassword || req.query.newPassword;
-    let inSession     = req.body._session    || req.query._session || req.params._session;
+    let inSession   = req.body._session    || req.query._session || req.params._session;
     let token       = req.body._token      || req.query._token   || req.params._token;
 
     let data = {
         passwordChanged : null,
         avatar : null
     };  
-
+    let newPasswordHash  = null;
      redisClient.hgetall(inSession, function(err, reply) {
         if (!err) {
-            if (id in users){
-                if (oldPassword && newPassword){
-                    if (oldPassword == users[id].password){
-                        users[id].password = newPassword;
-                        data.passwordChanged = true;
-                    }else{
-                        let reason  = {
-                            oldPassword : "Forbidden"
-                        };
-                        return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason :reason }))); 
+            let sql = 'SELECT * FROM user WHERE username = ?';
+            connection.query(sql,inUsername, function (error, results, fields) {
+                if (results.length > 0 ){
+                    if (oldPassword && newPassword){
+                        let oldPass =  CreateHash(oldPassword, results[0].salt);
+                        if (oldPassword == results[0].passwordhash){
+                            newPasswordHash = CreateHash(newPassword,results[0].salt);
+                            data.passwordChanged = true;
+                        } else {
+                            let reason  = {
+                                oldPassword : "Forbidden"
+                            };
+                            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason :reason }))); 
+                        } 
                     }
-                }    
-            
-                if (avatar){
-                    users[id].avatar = avatar; 
-                    data.avatar = avatar;   
-                    redisClient.hmset(inSession, { // Using hmset cause not sure of syntax for hset
-                        'avatar' : avatar
-                    });
-                }
-        
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));       
-            }   
+                    if (avatar){
+                        data.avatar = avatar;   
+                        redisClient.hmset(inSession, { // Using hmset cause not sure of syntax for hset
+                            'avatar' : avatar
+                        });
+                    }
+                    if (newPasswordHash){
+                        let sql = 'UPDATE user SET passwordhash = ? WHERE id = ?';
+                        connection.query(sql,[newPasswordHash, id], function (error, result ){});
+                    }
+                    if (avatar){
+                        let sql = 'UPDATE user SET avatar_url = ? WHERE id = ?';
+                        connection.query(sql,[avatar, id], function (error, result ){});
+                    }
+                    return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));
+                }   
+            });
+        }
+        else{
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
         }
     });
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
 }
 
 // this function is exported so it can be called from app.js
