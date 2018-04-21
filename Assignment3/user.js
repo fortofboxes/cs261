@@ -38,20 +38,22 @@ function Create(req, res, next) {
             console.log("Should be already taken!");
            reason = { username : 'Already taken'}
            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
-        }
-    });
+        }else{
+            sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
+        let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
 
-    sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
-    let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
-
-    connection.query(sql, [values], function (err, result, fields) {
-    });
+        connection.query(sql, [values], function (err, result, fields) {
+        });
 
     let response = {
         id : newID,
         username : inUsername
     };
     return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
+        }
+    });
+
+
 }
 
 function Login(req, res, next) {
