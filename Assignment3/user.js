@@ -5,7 +5,7 @@ var crypto = require('crypto');
 
 var redisClient = app.GetRedisClient();
 var connection = app.GetSQLConnection();
-
+console.log("HERE:S");
 function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
 }
@@ -58,6 +58,7 @@ function Login(req, res, next) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
         if (results.length > 0){
+            console.log("password no hash: " + inPassword);
             let pass =  CreateHash(inPassword, results[0].salt);
             console.log("Password: " +results[0].passwordhash);
             console.log("newPassword: " +pass);
@@ -167,7 +168,8 @@ function Update(req, res, next){
         if (!err) {
             let sql = 'SELECT * FROM user WHERE username = ?';
             connection.query(sql,inUsername, function (error, results, fields) {
-                if (results.length > 0 ){
+            if (error) console.log(error);
+                if (results.length > 0){
                     if (oldPassword && newPassword){
                         let oldPass =  CreateHash(oldPassword, results[0].salt);
                         if (oldPassword == results[0].passwordhash){
