@@ -5,7 +5,6 @@ var crypto = require('crypto');
 
 var redisClient = app.GetRedisClient();
 var connection = app.GetSQLConnection();
-
 function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
 }
@@ -25,10 +24,9 @@ function Create(req, res, next) {
     let newID = uuid(); 
     let salt = GetSalt();
     let passHash = CreateHash(inPassword, salt);
-    
 
     let sql = 'SELECT * FROM user WHERE username = ?';
-    connection.query(sql,inUsername, function (error, results, fields) {
+    connection.query(sql,[inUsername], function (error, results, fields) {
         if (results.length > 0){
            reason = { username : 'Already taken'}
            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
@@ -37,6 +35,7 @@ function Create(req, res, next) {
             let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
 
             connection.query(sql, [values], function (err, result, fields) {
+                console.log("pwepw");
         });
 
         let response = {
@@ -54,10 +53,11 @@ function Login(req, res, next) {
 
     let sql = 'SELECT * FROM user WHERE username = ?';
 
-    connection.query(sql,inUsername, function (error, results, fields) {
+    connection.query(sql,[inUsername], function (error, results, fields) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
         if (results.length > 0){
+            console.log("password no hash: " + inPassword);
             let pass =  CreateHash(inPassword, results[0].salt);
             console.log("Password: " +results[0].passwordhash);
             console.log("newPassword: " +pass);
@@ -166,8 +166,9 @@ function Update(req, res, next){
      redisClient.hgetall(inSession, function(err, reply) {
         if (!err) {
             let sql = 'SELECT * FROM user WHERE username = ?';
-            connection.query(sql,inUsername, function (error, results, fields) {
-                if (results.length > 0 ){
+            connection.query(sql,[inUsername], function (error, results, fields) {
+            if (error) console.log(error);
+                if (results.length > 0){
                     if (oldPassword && newPassword){
                         let oldPass =  CreateHash(oldPassword, results[0].salt);
                         if (oldPassword == results[0].passwordhash){
