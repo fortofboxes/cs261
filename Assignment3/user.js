@@ -65,12 +65,7 @@ function Login(req, res, next) {
     connection.query(sql,inUsername, function (error, results, fields) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
-        console.log("results back login:");
         if (results.length > 0){
-
-            console.log("resultID" +  results[0].id);  
-            console.log("fields" + fields);
-    
             let newSession = GenerateInteger();
             let newToken   = GenerateInteger();
             redisClient.hmset(newSession, {
@@ -92,10 +87,14 @@ function Login(req, res, next) {
 
             return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));    
         }
+        else
+        {
+             return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : 'Username/password mismatch' })));
+
+        }
     });
 
      
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : 'Username/password mismatch' })));
 }
 
 function Get(req, res, next) {
