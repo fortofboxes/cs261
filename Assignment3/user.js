@@ -26,27 +26,27 @@ function Create(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
     let inAvatar   = req.body.avatar   || req.query.avatar;
-    if (inUsername in usernamesToIDs){
-        reason = { username : 'Already taken'}
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
+    let newID = uuid(); 
+    let salt = GetSalt();
+    let passHash = CreateHash(inPassword, salt);
 
-    } else {
-        let newID = uuid(); 
-        let salt = GetSalt();
-        let passHash = CreateHash(inPassword, salt);
-
-         let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
-         let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
-         connection.query(sql, [values], function (err, result, fields) {
-           if (err) console.log("ISSUE ON CREATE " + err);
+    let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
+    let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
+    connection.query(sql, [values], function (err, result, fields) {
+        if (err){
+           reason = { username : 'Already taken'}
+           return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
+        
+        }else {
+       
            console.log("1 record inserted");
-         });
+        }
+        });
 
         let response = {
             id : newID,
             username : inUsername
         };
-
         return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
     }
 }
