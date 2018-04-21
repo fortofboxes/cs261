@@ -63,8 +63,8 @@ function Login(req, res, next) {
         if (error) console.log(error);
         if (results.length > 0){
             let pass =  CreateHash(inPassword, results[0].salt);
-            //console.log("Password: " +results[0].passwordhash);
-            //console.log("newPassword: " +pass);
+            console.log("Password: " +results[0].passwordhash);
+            console.log("newPassword: " +pass);
             console.log("equals? " + results[0].passwordhash == pass);
             
             let newSession = GenerateInteger();
