@@ -32,7 +32,8 @@ function Create(req, res, next) {
     
 
     let sql = 'SELECT * FROM user WHERE username = ?';
-    connection.query(sql,[inUsername], function (error, results, fields) {
+    connection.query(sql,inUsername, function (error, results, fields) {
+
         if (results > 0){
            reason = { username : 'Already taken'}
            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
@@ -58,7 +59,7 @@ function Login(req, res, next) {
 
     let sql = 'SELECT * FROM user WHERE username = ?';
 
-    connection.query(sql,[inUsername], function (error, results, fields) {
+    connection.query(sql,inUsername, function (error, results, fields) {
     // error will be an Error if one occurred during the query
         console.log("error" +  error);
         console.log("results back:");
