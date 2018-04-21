@@ -195,9 +195,6 @@ function Update(req, res, next){
                         }
                         if (oldPassword && newPassword){
                             let oldPass =CreateHash(oldPassword, object[0].salt); 
-                            console.log("old: " + oldPass);
-                            console.log("stored: " + object[0].passwordhash);
-
                             if ( oldPass == object[0].passwordhash){
                                 let newPassHash = CreateHash(newPassword,object[0].salt);
                                 let sql = 'UPDATE user SET passwordhash = ? WHERE id = ?';
@@ -205,8 +202,8 @@ function Update(req, res, next){
                                 data.passwordChanged = true;
                             
                             }else{
-
-                                 return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+                                let reason = { 'oldPassword' : 'Forbidden'}
+                                 return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : reason  })));   
                             }
                         }
                         if ((oldPassword && newPassword) || avatar){
