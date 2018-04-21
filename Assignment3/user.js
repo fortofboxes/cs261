@@ -67,7 +67,7 @@ function Login(req, res, next) {
             let pass =  CreateHash(inPassword, results[0].salt);
             console.log("Password: " +results[0].passwordhash);
             console.log("newPassword: " +pass);
-            consoe.log("equals? " + results[0].passwordhash == pass);
+            console.log("equals? " + results[0].passwordhash == pass);
             
             let newSession = GenerateInteger();
             let newToken   = GenerateInteger();
