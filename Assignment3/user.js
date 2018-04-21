@@ -37,6 +37,7 @@ function Create(req, res, next) {
             connection.query(sql, [values], function (err, result, fields) {
                 console.log("pwepw");
         });
+        console.log("CREATED user/Pass" + inUsername + " : " + inPassword + " : " + passHash);
 
         let response = {
             id : newID,
@@ -57,10 +58,10 @@ function Login(req, res, next) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
         if (results.length > 0){
-            console.log("password no hash: " + inPassword);
             let pass =  CreateHash(inPassword, results[0].salt);
-            console.log("Password: " +results[0].passwordhash);
-            console.log("newPassword: " +pass);
+            console.log("password no hash: " + inUsername + " : "+ inPassword + " : " + pass);
+
+            console.log("stored : " +results[0].passwordhash);
             console.log("equals? " + results[0].passwordhash == pass);
             
             let newSession = GenerateInteger();
