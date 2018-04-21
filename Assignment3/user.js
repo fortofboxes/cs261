@@ -63,9 +63,8 @@ function Login(req, res, next) {
         console.log("results back:");
         if (results.length > 0){
 
-            console.log("results" +  JSON.parse(JSON.stringify(results[0])));  
+            console.log("results" +  results[0]);  
             console.log("fields" + fields);
-
     
             let newSession = GenerateInteger();
             let newToken   = GenerateInteger();

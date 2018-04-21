@@ -25,7 +25,7 @@ app.use(bodyParser.json())
 
 
 connection.connect(err => {
-    console.log ("connection : " + err);
+    //console.log ("connection : " + err);
 });
 
 var redisClient = redis.createClient(6379, 'ip-172-31-29-156.us-west-2.compute.internal'); 
