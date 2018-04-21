@@ -5,7 +5,7 @@ var crypto = require('crypto');
 
 var redisClient = app.GetRedisClient();
 var connection = app.GetSQLConnection();
-
+console.log("HERE:S");
 function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
 }
