@@ -26,7 +26,7 @@ function Create(req, res, next) {
     let passHash = CreateHash(inPassword, salt);
 
     let sql = 'SELECT * FROM user WHERE username = ?';
-    connection.query(sql,inUsername, function (error, results, fields) {
+    connection.query(sql,[inUsername], function (error, results, fields) {
         if (results.length > 0){
            reason = { username : 'Already taken'}
            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
@@ -52,7 +52,7 @@ function Login(req, res, next) {
 
     let sql = 'SELECT * FROM user WHERE username = ?';
 
-    connection.query(sql,inUsername, function (error, results, fields) {
+    connection.query(sql,[inUsername], function (error, results, fields) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
         if (results.length > 0){
@@ -165,7 +165,7 @@ function Update(req, res, next){
      redisClient.hgetall(inSession, function(err, reply) {
         if (!err) {
             let sql = 'SELECT * FROM user WHERE username = ?';
-            connection.query(sql,inUsername, function (error, results, fields) {
+            connection.query(sql,[inUsername], function (error, results, fields) {
             if (error) console.log(error);
                 if (results.length > 0){
                     if (oldPassword && newPassword){
