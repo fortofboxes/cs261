@@ -105,9 +105,9 @@ function Get(req, res, next) {
         if (!err) {
             if (inToken == reply.token){
                 let data = {
-                    id       : redisClient.hget(inSession, 'id'),
-                    username : redisClient.hget(inSession, 'username'),
-                    avatar   : redisClient.hget(inSession, 'avatar')
+                    id       : reply.id,
+                    username : reply.username,
+                    avatar   : reply.avatar
                 };
                 return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
             }
@@ -137,9 +137,9 @@ function Find(req, res, next){
         if (!err) {
             if (inToken ==  reply.token){
                 let data = {
-                    id       : redisClient.hget(inSession, 'id'),
-                    username : redisClient.hget(inSession, 'username'),
-                    avatar   : redisClient.hget(inSession, 'avatar')
+                    id       : reply.id,
+                    username : reply.username,
+                    avatar   : reply.avatar
                 };
                 return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
             } else{
