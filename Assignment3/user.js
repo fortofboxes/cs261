@@ -14,7 +14,7 @@ function GetSalt(){
 }
 
 function CreateHash(password, salt){
-    return  crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
+    return  password;// crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
 }
 
 function Create(req, res, next) {
