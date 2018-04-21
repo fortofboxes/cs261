@@ -184,15 +184,17 @@ function Update(req, res, next){
     {
         if(object.length > 0)
         {
+            console.log("1");
             redisClient.hgetall(inSession, function(err, redisObject) { // this validates the session
                 if (!err) {
                     if (inToken == redisObject.token){ // validate token
-
+                        console.log("2");
                         if (avatar){
                             let sql = 'UPDATE user SET avatar_url = ? WHERE id = ?';
                             connection.query(sql, [avatar, inId], function(error,result){});
                             data.avatar = avatar;
-                            //Update redis
+                            console.log("3");
+                            
                         }
                         if (oldPassword && newPassword){
                             if (CreateHash(oldPassword, object[0].salt) == object[0].passwordhash){
@@ -200,12 +202,20 @@ function Update(req, res, next){
                                 let sql = 'UPDATE user SET passwordhash = ? WHERE id = ?';
                                 connection.query(sql, [newPassHash, inId], function(error,result){});
                                 data.passwordChanged = true;
+                                console.log("4");
+                            
                             }else{
+                                console.log("5");
+
                                  return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
                             }
                         }
                         if ((oldPassword && newPassword) || avatar){
                           return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  })));   
+                        }
+                        else    {
+                         return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+                            
                         }
                     
                     }else {
