@@ -101,6 +101,10 @@ function Get(req, res, next) {
 
     redisClient.hgetall(inSession, function(err, reply) { // doing instead of exists
         if (!err) {
+            console.log("GetInID: " + inId);
+            console.log("reply: " + reply.id);
+            console.log("replyUSer: " + reply.username);
+
             if (inToken == reply.token){
                 let data = {
                     id       : reply.id,
