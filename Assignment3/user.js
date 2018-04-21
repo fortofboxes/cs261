@@ -184,28 +184,27 @@ function Update(req, res, next){
     {
         if(object.length > 0)
         {
-            console.log("1");
             redisClient.hgetall(inSession, function(err, redisObject) { // this validates the session
                 if (!err) {
                     if (inToken == redisObject.token){ // validate token
-                        console.log("2");
                         if (avatar){
                             let sql = 'UPDATE user SET avatar_url = ? WHERE id = ?';
                             connection.query(sql, [avatar, inId], function(error,result){});
                             data.avatar = avatar;
-                            console.log("3");
                             
                         }
                         if (oldPassword && newPassword){
-                            if (CreateHash(oldPassword, object[0].salt) == object[0].passwordhash){
+                            let oldPass =CreateHash(oldPassword, object[0].salt); 
+                            console.log("old: " + oldPass);
+                            console.log("stored: " + object[0].passwordhash);
+
+                            if ( oldPass == object[0].passwordhash){
                                 let newPassHash = CreateHash(newPassword,object[0].salt);
                                 let sql = 'UPDATE user SET passwordhash = ? WHERE id = ?';
                                 connection.query(sql, [newPassHash, inId], function(error,result){});
                                 data.passwordChanged = true;
-                                console.log("4");
                             
                             }else{
-                                console.log("5");
 
                                  return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
                             }
@@ -215,7 +214,7 @@ function Update(req, res, next){
                         }
                         else    {
                          return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
-                            
+
                         }
                     
                     }else {
