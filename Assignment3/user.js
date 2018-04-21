@@ -166,7 +166,7 @@ function Find(req, res, next){
 }
 
 function Update(req, res, next){
-    let id          = req.body.id          || req.query.id || req.params.id;
+    let inId          = req.body.id          || req.query.id || req.params.id;
     let inUsername  = req.body.username    || req.query.username;
     let password    = req.body.password    || req.query.password;
     let avatar      = req.body.avatar      || req.query.avatar;
@@ -190,7 +190,7 @@ function Update(req, res, next){
 
                         if (avatar){
                             let sql = 'UPDATE user SET avatar_url = ? WHERE id = ?';
-                            connection.query(sql, [avatar, id], function(error,result){});
+                            connection.query(sql, [avatar, inId], function(error,result){});
                             data.avatar = avatar;
                             //Update redis
                         }
@@ -198,7 +198,7 @@ function Update(req, res, next){
                             if (CreateHash(oldPassword, object[0].salt) == object[0].passwordhash){
                                 let newPassHash = CreateHash(newPassword,object[0].salt);
                                 let sql = 'UPDATE user SET passwordhash = ? WHERE id = ?';
-                                connection.query(sql, [newPassHash, id], function(error,result){});
+                                connection.query(sql, [newPassHash, inId], function(error,result){});
                                 data.passwordChanged = true;
                             }else{
                                  return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
