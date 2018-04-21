@@ -60,33 +60,33 @@ function Login(req, res, next) {
     connection.query(sql,[inUsername], function (error, results, fields) {
     // error will be an Error if one occurred during the query
         console.log("error" +  error);
+        if (results.length > 0){
 
-
-        console.log("results" +  JSON.parse(JSON.stringify(results[0])));  
-        console.log("fields" + fields);
+            console.log("results" +  JSON.parse(JSON.stringify(results[0])));  
+            console.log("fields" + fields);
 
     
-        let newSession = GenerateInteger();
-        let newToken   = GenerateInteger();
-        redisClient.hmset(newSession, {
-            'id'       : results[0].id,
-            'username' : inUsername,
-            'token'    : newToken,
-            'avatar'   : results[0].avatar_url
-       });
+            let newSession = GenerateInteger();
+            let newToken   = GenerateInteger();
+            redisClient.hmset(newSession, {
+                'id'       : results[0].id,
+                'username' : inUsername,
+                'token'    : newToken,
+                'avatar'   : results[0].avatar_url
+            });
 
-        redisClient.hgetall(newSession, function(err, object) {
-            console.log(object);
-        });
+            redisClient.hgetall(newSession, function(err, object) {
+                console.log(object);
+            });
 
-        let response = {
-            id : results.id,
-            session : newSession,
-            token : newToken
-        };
+            let response = {
+                id : results[0].id,
+                session : newSession,
+                token : newToken
+            };
 
-        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));     
-        
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));    
+        }
     });
 
      
