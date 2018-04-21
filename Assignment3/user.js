@@ -57,7 +57,7 @@ function Login(req, res, next) {
     let inUsername = req.body.username || req.query.username;
     let inPassword = req.body.password || req.query.password;
 
-    let sql = "SELECT * FROM user WHERE id = usernamesToIDs[inUsername]"
+    let sql = 'SELECT * FROM user WHERE id = usernamesToIDs[inUsername]';
     connection.query(sql, function (error, results, fields) {
     // error will be an Error if one occurred during the query
     console.log("error" +  error);
