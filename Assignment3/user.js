@@ -39,7 +39,7 @@ function Create(req, res, next) {
            reason = { username : 'Already taken'}
            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
         }else{
-            sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
+            sql = 'INSERT INTO user (id, username, passwordhash, salt, avatar_url) VALUES ?';
         let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
 
         connection.query(sql, [values], function (err, result, fields) {
@@ -65,7 +65,7 @@ function Login(req, res, next) {
     connection.query(sql,inUsername, function (error, results, fields) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
-        if (results.length > 0){
+        if (results.length > 0 && CreateHash(results[0].passwordhash == CreateHash(inPassword, results[0].salt))){
             let newSession = GenerateInteger();
             let newToken   = GenerateInteger();
             redisClient.hmset(newSession, {
