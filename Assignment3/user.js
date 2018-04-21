@@ -14,7 +14,7 @@ function GetSalt(){
 }
 
 function CreateHash(password, salt){
-    return  crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
+    return password; crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
 }
 
 function Create(req, res, next) {
@@ -25,7 +25,6 @@ function Create(req, res, next) {
     let salt = GetSalt();
     let passHash = CreateHash(inPassword, salt);
     let passHash2 = CreateHash(inPassword, salt);
-    console.log(passHash + " -> " + passHash2);
     let sql = 'SELECT * FROM user WHERE username = ?';
     connection.query(sql,[inUsername], function (error, results, fields) {
         if (results.length > 0){
@@ -38,8 +37,6 @@ function Create(req, res, next) {
             connection.query(sql, [values], function (err, result, fields) {
                 console.log("");
         });
-        console.log("CREATED user/Pass" + inUsername + " : " + inPassword + " : " + passHash);
-        console.log("created Salt:  " + inUsername + "  : " + salt);
         let response = {
             id : newID,
              username : inUsername
@@ -60,32 +57,33 @@ function Login(req, res, next) {
         if (error) console.log(error);
         if (results.length > 0){
             let pass =  CreateHash(inPassword, results[0].salt);
-            console.log("password no hash: " + inUsername + " : "+ inPassword + " : " + pass);
 
-            console.log("stored : " + results[0].passwordhash);
-            console.log("stored Salt:  " + inUsername + "  : " + results[0].salt);
+            if(results[0].passwordhash == pass) {
+                let newSession = GenerateInteger();
+                let newToken   = GenerateInteger();
+                redisClient.hmset(newSession, {
+                    'id'       : results[0].id,
+                    'username' : inUsername,
+                    'token'    : newToken,
+                    'avatar'   : results[0].avatar_url
+                });
 
-            console.log("equals? " + results[0].passwordhash == pass);
-            
-            let newSession = GenerateInteger();
-            let newToken   = GenerateInteger();
-            redisClient.hmset(newSession, {
-                'id'       : results[0].id,
-                'username' : inUsername,
-                'token'    : newToken,
-                'avatar'   : results[0].avatar_url
-            });
+                redisClient.hgetall(newSession, function(err, object) {
+                });
 
-            redisClient.hgetall(newSession, function(err, object) {
-            });
+                let response = {
+                    id : results[0].id,
+                    session : newSession,
+                    token : newToken
+                };
 
-            let response = {
-                id : results[0].id,
-                session : newSession,
-                token : newToken
-            };
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));
+            }
+            else{
+             return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : 'Username/password mismatch' })));
 
-            return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response})));    
+            }
+                
         }
         else
         {
