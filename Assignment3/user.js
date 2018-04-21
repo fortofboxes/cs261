@@ -38,16 +38,16 @@ function Create(req, res, next) {
            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
         }else{
             sql = 'INSERT INTO user (id, username, passwordhash, salt, avatar_url) VALUES ?';
-        let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
+            let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
 
-        connection.query(sql, [values], function (err, result, fields) {
+            connection.query(sql, [values], function (err, result, fields) {
         });
 
-    let response = {
-        id : newID,
-        username : inUsername
-    };
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
+        let response = {
+            id : newID,
+             username : inUsername
+        };
+        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
         }
     });
 }
@@ -103,7 +103,7 @@ function Get(req, res, next) {
 
     redisClient.hgetall(inSession, function(err, reply) { // doing instead of exists
         if (!err) {
-            if (inToken ==  redisClient.hget(inSession, 'token')){
+            if (inToken == reply.token){
                 let data = {
                     id       : redisClient.hget(inSession, 'id'),
                     username : redisClient.hget(inSession, 'username'),
@@ -112,38 +112,44 @@ function Get(req, res, next) {
                 return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
             }
         }
-    });
-    let data = {
-        id : null,
-        username : null,
-        avatar : null
-    };  
+        else{
+            let data = {
+                id : null,
+                username : null,
+                avatar : null
+            };  
     return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+        }
+    });
+
 }
 
 function Find(req, res, next){
     let inUsername = req.body.username || req.query.username || req.params.username;    
     let inSession  = req.body._session || req.query._session;
     let inToken    = req.body._token   || req.query._token;
-    
+    let data = {
+        id : null,
+        username : null,
+        avatar : null
+    };  
     redisClient.hgetall(inSession, function(err, reply) {
-        if (!err === 1) {
-            if (inToken ==  redisClient.hget(inSession, 'token')){
+        if (!err) {
+            if (inToken ==  reply.token){
                 let data = {
                     id       : redisClient.hget(inSession, 'id'),
                     username : redisClient.hget(inSession, 'username'),
                     avatar   : redisClient.hget(inSession, 'avatar')
                 };
                 return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
+            } else{
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
             }
+        }else{
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
         }
     });
-    let data = {
-        id : null,
-        username : null,
-        avatar : null
-    };  
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+
 }
 
 function Update(req, res, next){
