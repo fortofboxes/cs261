@@ -24,7 +24,8 @@ function Create(req, res, next) {
     let newID = uuid(); 
     let salt = GetSalt();
     let passHash = CreateHash(inPassword, salt);
-
+    let passHash2 = CreateHash(inPassword, salt);
+    console.log(passHash + " -> " + passHash2);
     let sql = 'SELECT * FROM user WHERE username = ?';
     connection.query(sql,[inUsername], function (error, results, fields) {
         if (results.length > 0){
@@ -61,7 +62,7 @@ function Login(req, res, next) {
             let pass =  CreateHash(inPassword, results[0].salt);
             console.log("password no hash: " + inUsername + " : "+ inPassword + " : " + pass);
 
-            console.log("stored : " +results[0].passwordhash);
+            console.log("stored : " + results[0].passwordhash);
             console.log("stored Salt:  " + inUsername + "  : " + results[0].salt);
 
             console.log("equals? " + results[0].passwordhash == pass);
