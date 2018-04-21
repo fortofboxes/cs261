@@ -61,17 +61,17 @@ function Login(req, res, next) {
     // error will be an Error if one occurred during the query
         console.log("error" +  error);
     
-        console.log("results" +  results);  
+        console.log("results" +  results[0]);  
         console.log("fields" + fields);
 
     
         let newSession = GenerateInteger();
         let newToken   = GenerateInteger();
         redisClient.hmset(newSession, {
-            'id'       : results.id,
+            'id'       : results[0].id,
             'username' : inUsername,
             'token'    : newToken,
-            'avatar'   : results.avatar_url
+            'avatar'   : results[0].avatar_url
        });
 
         redisClient.hgetall(newSession, function(err, object) {
