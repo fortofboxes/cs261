@@ -58,7 +58,7 @@ function Login(req, res, next) {
     connection.query(sql,inUsername, function (error, results, fields) {
         if (error) console.log(error);
         if (results.length > 0){
-            console.log("password no hash: " + newPassword);
+            console.log("password no hash: " + inPassword);
             let pass =  CreateHash(inPassword, results[0].salt);
             console.log("Password: " +results[0].passwordhash);
             console.log("newPassword: " +pass);
