@@ -60,8 +60,9 @@ function Login(req, res, next) {
     connection.query(sql,[inUsername], function (error, results, fields) {
     // error will be an Error if one occurred during the query
         console.log("error" +  error);
-    
-        console.log("results" +  results[0]);  
+
+
+        console.log("results" +  JSON.parse(JSON.stringify(results[0])));  
         console.log("fields" + fields);
 
     
