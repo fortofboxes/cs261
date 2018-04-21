@@ -10,10 +10,9 @@ function GenerateInteger() {
     return Math.floor(Math.random() * Math.floor(10000));
 }
 
-//function GetSalt(){
-//    return Math.round((Date.now() * Math.random())) + ' ';
-//}
-var salt =  Math.round((Date.now() * Math.random())) + ' ';
+function GetSalt(){
+    return Math.round((Date.now() * Math.random())) + ' ';
+}
 
 function CreateHash(password, salt){
     return  crypto.createHash('sha512').update(salt + password, 'utf8').digest('hex');
@@ -24,7 +23,7 @@ function Create(req, res, next) {
     let inPassword = req.body.password || req.query.password;
     let inAvatar   = req.body.avatar   || req.query.avatar;
     let newID = uuid(); 
-   // let salt = GetSalt();
+    let salt = GetSalt();
     let passHash = CreateHash(inPassword, salt);
     
 
@@ -56,6 +55,7 @@ function Login(req, res, next) {
     let sql = 'SELECT * FROM user WHERE username = ?';
 
     connection.query(sql,inUsername, function (error, results, fields) {
+    // error will be an Error if one occurred during the query
         if (error) console.log(error);
         if (results.length > 0){
             let pass =  CreateHash(inPassword, results[0].salt);
