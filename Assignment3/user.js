@@ -65,7 +65,7 @@ function Login(req, res, next) {
     connection.query(sql,inUsername, function (error, results, fields) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
-        if (results.length > 0 && CreateHash(results[0].passwordhash == CreateHash(inPassword, results[0].salt))){
+        if (results.length > 0 && (results[0].passwordhash == CreateHash(inPassword, results[0].salt))){
             let newSession = GenerateInteger();
             let newToken   = GenerateInteger();
             redisClient.hmset(newSession, {
@@ -93,8 +93,6 @@ function Login(req, res, next) {
 
         }
     });
-
-     
 }
 
 function Get(req, res, next) {
