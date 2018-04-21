@@ -35,10 +35,10 @@ function Create(req, res, next) {
             let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
 
             connection.query(sql, [values], function (err, result, fields) {
-                console.log("pwepw");
+                console.log("");
         });
         console.log("CREATED user/Pass" + inUsername + " : " + inPassword + " : " + passHash);
-
+        console.log("created Salt:  " + inUsername + "  : " + salt);
         let response = {
             id : newID,
              username : inUsername
@@ -62,6 +62,8 @@ function Login(req, res, next) {
             console.log("password no hash: " + inUsername + " : "+ inPassword + " : " + pass);
 
             console.log("stored : " +results[0].passwordhash);
+            console.log("stored Salt:  " + inUsername + "  : " + results[0].salt);
+
             console.log("equals? " + results[0].passwordhash == pass);
             
             let newSession = GenerateInteger();
