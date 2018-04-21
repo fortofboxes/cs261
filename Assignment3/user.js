@@ -94,25 +94,33 @@ function Login(req, res, next) {
 }
 
 function Get(req, res, next) {
-
     let inId      = req.body.id       || req.query.id || req.params.id;    
     let inSession = req.body._session || req.query._session;
     let inToken   = req.body._token   || req.query._token;
 
-    redisClient.hgetall(inSession, function(err, reply) { // doing instead of exists
-        if (!err) {
-            console.log("GetInID: " + inId);
-            console.log("reply: " + reply.id);
-            console.log("replyUSer: " + reply.username);
-
-            if (inToken == reply.token){
-                let data = {
-                    id       : reply.id,
-                    username : reply.username,
-                    avatar   : reply.avatar
-                };
-                return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
-            }
+    connection.query('SELECT * FROM user WHERE id = ?', [inId], (err, object) => 
+    {
+        if(object.length > 0)
+        {
+            redisClient.hgetall(inSession, function(err, redisObject) { // doing instead of exists
+                if (!err) {
+                    if (inToken == redisObject.token){
+                        let data = {
+                            id       : object[0].id,
+                            username : object[0].username,
+                            avatar   : object[0].avatar
+                        };
+                        return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : data  }))); 
+                    }
+                } else {
+                    let data = {
+                        id : null,
+                        username : null,
+                        avatar : null
+                    };  
+                return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+                }
+            });
         }
         else{
             let data = {
@@ -120,10 +128,9 @@ function Get(req, res, next) {
                 username : null,
                 avatar : null
             };  
-    return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
+            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', data : data  })));   
         }
-    });
-
+    } 
 }
 
 function Find(req, res, next){
