@@ -59,8 +59,8 @@ function Login(req, res, next) {
             let pass =  CreateHash(inPassword, results[0].salt);
 
             if(results[0].passwordhash == pass) {
-                let newSession = GenerateInteger();
-                let newToken   = GenerateInteger();
+                let newSession = uuid();
+                let newToken   = uuid();
                 redisClient.hmset(newSession, {
                     'id'       : results[0].id,
                     'username' : inUsername,
