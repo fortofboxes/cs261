@@ -33,9 +33,7 @@ function Create(req, res, next) {
 
     let sql = 'SELECT * FROM user WHERE username = ?';
     connection.query(sql,inUsername, function (error, results, fields) {
-        console.log("check for duplicate:");
         if (results.length > 0){
-            console.log("Should be already taken!");
            reason = { username : 'Already taken'}
            return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
         }else{
@@ -65,8 +63,8 @@ function Login(req, res, next) {
         if (error) console.log(error);
         if (results.length > 0){
             let pass =  CreateHash(inPassword, results[0].salt);
-            console.log("Password: " +results[0].passwordhash);
-            console.log("newPassword: " +pass);
+            //console.log("Password: " +results[0].passwordhash);
+            //console.log("newPassword: " +pass);
             console.log("equals? " + results[0].passwordhash == pass);
             
             let newSession = GenerateInteger();
@@ -79,7 +77,6 @@ function Login(req, res, next) {
             });
 
             redisClient.hgetall(newSession, function(err, object) {
-                console.log(object);
             });
 
             let response = {
