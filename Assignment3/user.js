@@ -52,8 +52,6 @@ function Create(req, res, next) {
     return process.nextTick(() => res.send(JSON.stringify({ status: 'success', data : response  })));
         }
     });
-
-
 }
 
 function Login(req, res, next) {
@@ -65,7 +63,12 @@ function Login(req, res, next) {
     connection.query(sql,inUsername, function (error, results, fields) {
     // error will be an Error if one occurred during the query
         if (error) console.log(error);
-        if (results.length > 0 && (results[0].passwordhash == CreateHash(inPassword, results[0].salt))){
+        if (results.length > 0){
+            let pass =  CreateHash(inPassword, results[0].salt);
+            console.log("Password: " +results[0].passwordhash);
+            console.log("newPassword: " +pass);
+            consoe.log("equals? " + results[0].passwordhash == pass);
+            
             let newSession = GenerateInteger();
             let newToken   = GenerateInteger();
             redisClient.hmset(newSession, {
