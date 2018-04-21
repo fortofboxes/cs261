@@ -29,19 +29,20 @@ function Create(req, res, next) {
     let newID = uuid(); 
     let salt = GetSalt();
     let passHash = CreateHash(inPassword, salt);
+    
 
-    let sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
+    let sql = 'SELECT * FROM user WHERE username = ?';
+    connection.query(sql,[inUsername], function (error, results, fields) {
+        if (results > 0){
+           reason = { username : 'Already taken'}
+           return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
+        }
+    });
+
+    sql = 'INSERT INTO user (id, username, passwordhash,salt, avatar_url) VALUES ?';
     let values = [[newID, inUsername, passHash, salt, inAvatar]]; 
 
     connection.query(sql, [values], function (err, result, fields) {
-        if (err){
-           reason = { username : 'Already taken'}
-           return process.nextTick(() => res.send(JSON.stringify({ status: 'fail', reason : reason})));
-        
-        }else {
-       
-           console.log("1 record inserted");
-        }
     });
 
     let response = {
